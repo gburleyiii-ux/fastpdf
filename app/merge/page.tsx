@@ -79,7 +79,8 @@ export default function MergePage() {
   const downloadMerged = () => {
     if (!mergedPdf) return;
     
-    const blob = new Blob([mergedPdf.buffer as ArrayBuffer], { type: 'application/pdf' });
+    // @ts-ignore - Uint8Array is compatible with BlobPart
+    const blob = new Blob([mergedPdf], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
