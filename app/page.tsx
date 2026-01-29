@@ -18,7 +18,7 @@ export default function HomePage() {
               Pricing
             </Link>
             <Link
-              href="/signup"
+              href="/merge"
               className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition-colors"
             >
               Get Started
@@ -128,10 +128,10 @@ export default function HomePage() {
             </div>
           </div>
           <Link
-            href="/pricing"
+            href="/merge"
             className="inline-block bg-white text-blue-600 px-12 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform"
           >
-            Start Free Trial →
+            Try It Free →
           </Link>
           <p className="text-sm opacity-75 mt-4">No credit card required • Cancel anytime</p>
         </div>
