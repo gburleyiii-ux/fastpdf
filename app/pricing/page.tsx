@@ -2,8 +2,40 @@
 
 import { Check, Zap, Shield, FileText } from "lucide-react";
 import Link from "next/link";
+import { useUser } from "@/hooks/useUser";
+import { useState } from "react";
 
 export default function PricingPage() {
+  const { user } = useUser();
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const handleCheckout = async (priceId: string) => {
+    if (!user) {
+      alert('Please sign in first');
+      return;
+    }
+
+    setLoading(priceId);
+
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, priceId }),
+      });
+
+      const { url } = await response.json();
+      
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to start checkout. Please try again.');
+    } finally {
+      setLoading(null);
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
@@ -73,10 +105,14 @@ export default function PricingPage() {
               <Feature text="Cancel anytime" light />
             </ul>
 
-            <button className="w-full bg-white text-blue-600 py-3 rounded-xl font-black hover:scale-105 transition-transform">
-              Start Free Trial →
+            <button 
+              onClick={() => handleCheckout(process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_MONTHLY || '')}
+              disabled={loading !== null}
+              className="w-full bg-white text-blue-600 py-3 rounded-xl font-black hover:scale-105 transition-transform disabled:opacity-50"
+            >
+              {loading === process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_MONTHLY ? 'Loading...' : 'Get Pro Monthly →'}
             </button>
-            <p className="text-xs opacity-75 text-center mt-3">No credit card required</p>
+            <p className="text-xs opacity-75 text-center mt-3">{user ? 'Secure checkout with Stripe' : 'Sign in to subscribe'}</p>
           </div>
 
           {/* Pro Yearly */}
@@ -98,8 +134,12 @@ export default function PricingPage() {
               <Feature text="Priority support" />
             </ul>
 
-            <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-black hover:scale-105 transition-transform">
-              Start Free Trial →
+            <button 
+              onClick={() => handleCheckout(process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_YEARLY || '')}
+              disabled={loading !== null}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-black hover:scale-105 transition-transform disabled:opacity-50"
+            >
+              {loading === process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_YEARLY ? 'Loading...' : 'Get Pro Yearly →'}
             </button>
           </div>
         </div>

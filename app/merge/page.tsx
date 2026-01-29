@@ -5,12 +5,18 @@ import { useDropzone } from "react-dropzone";
 import { FileText, Upload, Download, X, GripVertical, Zap, Lock } from "lucide-react";
 import Link from "next/link";
 import { PDFDocument } from "pdf-lib";
+import { useUser } from "@/hooks/useUser";
+import { useUsage } from "@/hooks/useUsage";
+import AuthModal from "@/components/AuthModal";
 
 export default function MergePage() {
   const [files, setFiles] = useState<File[]>([]);
   const [merging, setMerging] = useState(false);
   const [mergedPdf, setMergedPdf] = useState<Uint8Array | null>(null);
-  const [usageCount, setUsageCount] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const { user, signOut } = useUser();
+  const { canUse, logUsage, remainingUses, isPro, loading: usageLoading } = useUsage('merge');
   const FREE_LIMIT = 2;
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -33,8 +39,14 @@ export default function MergePage() {
       return;
     }
 
-    // Check usage limit (would be enforced by backend in production)
-    if (usageCount >= FREE_LIMIT) {
+    // Require login
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    // Check usage limit
+    if (!canUse && !isPro) {
       alert('Free limit reached! Upgrade to Pro for unlimited merges.');
       return;
     }
@@ -53,7 +65,9 @@ export default function MergePage() {
 
       const pdfBytes = await mergedPdf.save();
       setMergedPdf(pdfBytes);
-      setUsageCount(prev => prev + 1);
+      
+      // Log usage
+      await logUsage();
     } catch (error) {
       console.error('Merge error:', error);
       alert('Failed to merge PDFs. Please try again.');
@@ -90,14 +104,43 @@ export default function MergePage() {
             <FileText className="w-8 h-8 text-blue-600" />
             <span className="text-2xl font-black text-gray-900">FastPDF</span>
           </Link>
-          <Link
-            href="/pricing"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-bold hover:scale-105 transition-transform"
-          >
-            Upgrade to Pro
-          </Link>
+          <div className="flex items-center gap-4">
+            {user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="text-gray-700 hover:text-gray-900 font-medium"
+                >
+                  Dashboard
+                </Link>
+                {!isPro && (
+                  <Link
+                    href="/pricing"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-bold hover:scale-105 transition-transform"
+                  >
+                    Upgrade to Pro
+                  </Link>
+                )}
+                <button
+                  onClick={signOut}
+                  className="text-gray-600 hover:text-gray-900 text-sm"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-bold hover:scale-105 transition-transform"
+              >
+                Sign In / Sign Up
+              </button>
+            )}
+          </div>
         </div>
       </header>
+
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Page Header */}
@@ -109,17 +152,47 @@ export default function MergePage() {
         </div>
 
         {/* Usage Counter */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Zap className="w-6 h-6 text-blue-600" />
-            <span className="font-bold text-gray-900">
-              {FREE_LIMIT - usageCount} free merges remaining today
-            </span>
+        {user && !isPro && !usageLoading && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Zap className="w-6 h-6 text-blue-600" />
+              <span className="font-bold text-gray-900">
+                {remainingUses} free {remainingUses === 1 ? 'merge' : 'merges'} remaining today
+              </span>
+            </div>
+            <Link href="/pricing" className="text-blue-600 font-bold hover:underline text-sm">
+              Get Unlimited →
+            </Link>
           </div>
-          <Link href="/pricing" className="text-blue-600 font-bold hover:underline text-sm">
-            Get Unlimited →
-          </Link>
-        </div>
+        )}
+        
+        {user && isPro && (
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl p-4 mb-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Zap className="w-6 h-6" />
+              <span className="font-bold">
+                Pro Plan • Unlimited Merges
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {!user && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Lock className="w-6 h-6 text-yellow-600" />
+              <span className="font-bold text-gray-900">
+                Sign in to start merging PDFs
+              </span>
+            </div>
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="text-blue-600 font-bold hover:underline text-sm"
+            >
+              Sign In →
+            </button>
+          </div>
+        )}
 
         {!mergedPdf ? (
           <>
@@ -176,10 +249,17 @@ export default function MergePage() {
             {files.length >= 2 && (
               <button
                 onClick={mergePDFs}
-                disabled={merging || usageCount >= FREE_LIMIT}
+                disabled={merging || (user && !canUse && !isPro) || usageLoading}
                 className="w-full mt-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {merging ? 'Merging...' : `Merge ${files.length} PDFs →`}
+                {merging 
+                  ? 'Merging...' 
+                  : !user 
+                  ? 'Sign In to Merge →'
+                  : user && !canUse && !isPro
+                  ? 'Upgrade to Continue →'
+                  : `Merge ${files.length} PDFs →`
+                }
               </button>
             )}
           </>
