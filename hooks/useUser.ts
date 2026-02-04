@@ -18,7 +18,7 @@ export function useUser() {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }: { data: { session: { user: User } | null } }) => {
       setUser(session?.user ?? null)
       if (session?.user) {
         loadProfile(session.user.id)
@@ -30,7 +30,7 @@ export function useUser() {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event: string, session: { user: User } | null) => {
       setUser(session?.user ?? null)
       if (session?.user) {
         loadProfile(session.user.id)
