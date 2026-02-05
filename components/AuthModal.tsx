@@ -19,11 +19,13 @@ export default function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClos
 
     try {
       if (mode === 'signup') {
+        // Use production URL for email redirect to ensure auth works correctly
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            emailRedirectTo: `${appUrl}/auth/callback`,
           },
         })
         if (error) throw error
