@@ -1,20 +1,50 @@
 import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseAdmin } from '@/lib/supabase'
+import { checkoutSchema } from '@/lib/validation'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
+
+const RATE_LIMIT = {
+  maxRequests: 5,
+  windowMs: 60 * 1000, // 1 minute
+}
 
 export async function POST(req: Request) {
-  try {
-    const { userId, priceId } = await req.json()
+  // Rate limiting
+  const clientIp = getClientIp(req)
+  const rateLimitResult = rateLimit(`checkout:${clientIp}`, RATE_LIMIT)
+  
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded. Please try again later.' },
+      { 
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': RATE_LIMIT.maxRequests.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+        }
+      }
+    )
+  }
 
-    if (!userId || !priceId) {
+  try {
+    const body = await req.json()
+    
+    // Validate input
+    const validationResult = checkoutSchema.safeParse(body)
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Missing userId or priceId' },
+        { error: 'Invalid input', details: validationResult.error.errors },
         { status: 400 }
       )
     }
+    
+    const { userId, priceId } = validationResult.data
 
     // Get or create Stripe customer
-    const { data: profile } = await supabase
+    const supabaseAdmin = getSupabaseAdmin()
+    const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('stripe_customer_id, email')
       .eq('id', userId)
@@ -32,7 +62,7 @@ export async function POST(req: Request) {
       customerId = customer.id
 
       // Update profile with customer ID
-      await supabase
+      await supabaseAdmin
         .from('profiles')
         .update({ stripe_customer_id: customerId })
         .eq('id', userId)

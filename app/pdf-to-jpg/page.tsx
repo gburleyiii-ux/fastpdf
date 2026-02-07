@@ -10,9 +10,9 @@ import { useUser } from "@/hooks/useUser";
 import { useUsage } from "@/hooks/useUsage";
 import AuthModal from "@/components/AuthModal";
 
-// Set up PDF.js worker
+// Set up PDF.js worker - use local worker
 if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 }
 
 interface PagePreview {

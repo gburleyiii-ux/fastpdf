@@ -2,8 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Brand Colors */
+  --brand-blue: #2563eb;
+  --brand-purple: #7c3aed;
+  --brand-green: #10b981;
+  --brand-orange: #f97316;
+  --brand-pink: #ec4899;
+  
+  /* Dark mode defaults */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+}
+
+.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #475569;
+}
+
 @layer base {
   body {
-    @apply bg-white text-gray-900;
+    @apply bg-white text-gray-900 antialiased;
+  }
+  
+  .dark body {
+    @apply bg-slate-900 text-slate-100;
+  }
+}
+
+@layer utilities {
+  /* Brand gradient utilities */
+  .brand-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600;
+  }
+  
+  .brand-gradient-text {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  }
+  
+  /* Dark mode transitions */
+  .theme-transition {
+    @apply transition-colors duration-200;
   }
 }
