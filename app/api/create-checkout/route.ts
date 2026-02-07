@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     const validationResult = checkoutSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Invalid input', details: validationResult.error.errors },
+        { error: 'Invalid input', details: validationResult.error.flatten().fieldErrors },
         { status: 400 }
       )
     }

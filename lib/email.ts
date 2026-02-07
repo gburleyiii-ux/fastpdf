@@ -1,6 +1,17 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization - only create client when needed
+let resendInstance: Resend | null = null;
+
+const getResend = () => {
+  if (!resendInstance) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY not configured');
+    }
+    resendInstance = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendInstance;
+};
 
 interface SendEmailOptions {
   to: string;
@@ -17,12 +28,8 @@ export async function sendEmail({
   from = 'FastPDF <hello@fastpdf.app>',
   replyTo,
 }: SendEmailOptions) {
-  if (!process.env.RESEND_API_KEY) {
-    console.error('RESEND_API_KEY not configured');
-    throw new Error('Email service not configured');
-  }
-
   try {
+    const resend = getResend();
     const { data, error } = await resend.emails.send({
       from,
       to,
