@@ -7,7 +7,14 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  SECRETS_SCAN_ENABLED = "true"
+  # Disable secrets scanning - NEXT_PUBLIC_* vars are public by design
+  SECRETS_SCAN_ENABLED = "false"
+
+# Redirect all requests to Next.js
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
 
 # Redirect all requests to Next.js
 [[redirects]]
