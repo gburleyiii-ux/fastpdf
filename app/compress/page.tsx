@@ -8,6 +8,7 @@ import { PDFDocument } from "pdf-lib";
 import { useUser } from "@/hooks/useUser";
 import { useUsage } from "@/hooks/useUsage";
 import AuthModal from "@/components/AuthModal";
+import DarkModeToggle from "@/components/DarkModeToggle";
 
 export default function CompressPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -127,34 +128,35 @@ export default function CompressPage() {
   const savings = calculateSavings();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 theme-transition">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50 theme-transition">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <FileText className="w-8 h-8 text-green-600" />
-            <span className="text-2xl font-black text-gray-900">FastPDF</span>
+            <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <span className="text-2xl font-black text-gray-900 dark:text-white">FastPDF</span>
           </Link>
           <div className="flex items-center gap-4">
+            <DarkModeToggle />
             {user ? (
               <>
                 <Link
                   href="/dashboard"
-                  className="text-gray-700 hover:text-gray-900 font-medium"
+                  className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white font-medium theme-transition"
                 >
                   Dashboard
                 </Link>
                 {!isPro && (
                   <Link
                     href="/pricing"
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-2 rounded-lg font-bold hover:scale-105 transition-transform"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-bold hover:scale-105 transition-transform"
                   >
                     Upgrade to Pro
                   </Link>
                 )}
                 <button
                   onClick={signOut}
-                  className="text-gray-600 hover:text-gray-900 text-sm"
+                  className="text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white text-sm theme-transition"
                 >
                   Sign Out
                 </button>
@@ -162,7 +164,7 @@ export default function CompressPage() {
             ) : (
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-2 rounded-lg font-bold hover:scale-105 transition-transform"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-bold hover:scale-105 transition-transform"
               >
                 Sign In / Sign Up
               </button>
@@ -176,29 +178,29 @@ export default function CompressPage() {
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Page Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-black text-gray-900 mb-4">Compress PDF</h1>
-          <p className="text-xl text-gray-600">
+          <h1 className="text-5xl font-black text-gray-900 dark:text-white mb-4 theme-transition">Compress PDF</h1>
+          <p className="text-xl text-gray-600 dark:text-slate-300 theme-transition">
             Reduce your PDF file size without losing quality. Free, fast, and secure.
           </p>
         </div>
 
         {/* Usage Counter */}
         {user && !isPro && !usageLoading && (
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-8 flex items-center justify-between">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-8 flex items-center justify-between theme-transition">
             <div className="flex items-center gap-3">
-              <Zap className="w-6 h-6 text-green-600" />
-              <span className="font-bold text-gray-900">
+              <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <span className="font-bold text-gray-900 dark:text-white">
                 {remainingUses} free {remainingUses === 1 ? 'compression' : 'compressions'} remaining today
               </span>
             </div>
-            <Link href="/pricing" className="text-green-600 font-bold hover:underline text-sm">
+            <Link href="/pricing" className="text-blue-600 dark:text-blue-400 font-bold hover:underline text-sm">
               Get Unlimited →
             </Link>
           </div>
         )}
         
         {user && isPro && (
-          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl p-4 mb-8 flex items-center justify-between">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl p-4 mb-8 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Zap className="w-6 h-6" />
               <span className="font-bold">
@@ -209,16 +211,16 @@ export default function CompressPage() {
         )}
         
         {!user && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-8 flex items-center justify-between">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-8 flex items-center justify-between theme-transition">
             <div className="flex items-center gap-3">
-              <Lock className="w-6 h-6 text-yellow-600" />
-              <span className="font-bold text-gray-900">
+              <Lock className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              <span className="font-bold text-gray-900 dark:text-white">
                 Sign in to compress PDFs
               </span>
             </div>
             <button
               onClick={() => setShowAuthModal(true)}
-              className="text-green-600 font-bold hover:underline text-sm"
+              className="text-blue-600 dark:text-blue-400 font-bold hover:underline text-sm"
             >
               Sign In →
             </button>
@@ -232,23 +234,23 @@ export default function CompressPage() {
               <div
                 {...getRootProps()}
                 className={`border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer transition-all ${
-                  isDragActive ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-green-400'
+                  isDragActive ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-500'
                 }`}
               >
                 <input {...getInputProps()} />
                 <Minimize2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                   {isDragActive ? 'Drop PDF here' : 'Click or drag PDF here'}
                 </h3>
-                <p className="text-gray-600">We'll compress it instantly</p>
+                <p className="text-gray-600 dark:text-slate-400">We'll compress it instantly</p>
               </div>
             ) : (
-              <div className="bg-white border rounded-xl p-8">
+              <div className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-8 theme-transition">
                 <div className="flex items-center gap-4 mb-6">
-                  <FileText className="w-16 h-16 text-green-600" />
+                  <FileText className="w-16 h-16 text-blue-600 dark:text-blue-400" />
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900">{file.name}</h3>
-                    <p className="text-gray-600">Original size: {formatFileSize(file.size)}</p>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">{file.name}</h3>
+                    <p className="text-gray-600 dark:text-slate-400">Original size: {formatFileSize(file.size)}</p>
                   </div>
                   <button
                     onClick={reset}
