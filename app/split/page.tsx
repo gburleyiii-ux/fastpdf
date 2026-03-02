@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { FileText, Upload, Download, X, Scissors, Zap, Lock, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { PDFDocument } from "pdf-lib";
+import JSZip from "jszip";
 import { useUser } from "@/hooks/useUser";
 import { useUsage } from "@/hooks/useUsage";
 import AuthModal from "@/components/AuthModal";
@@ -78,18 +79,21 @@ export default function SplitPage() {
     }
   };
 
-  const downloadAll = () => {
+  const downloadAll = async () => {
+    const zip = new JSZip();
     splitPdfs.forEach(pdf => {
-      const blob = new Blob([pdf.data], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = pdf.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      zip.file(pdf.name, pdf.data);
     });
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    const baseName = splitPdfs[0]?.name.replace(/_page_\d+\.pdf$/, '') || 'split_pages';
+    a.download = `${baseName}_split.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const reset = () => {

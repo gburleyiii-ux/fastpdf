@@ -194,32 +194,30 @@ export default function Dashboard() {
         {/* More Tools */}
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">More Tools</h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Link
-              href="/jpg-to-pdf"
-              className="p-4 bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-md transition-shadow flex items-center gap-4 theme-transition"
-            >
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">🖼️</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">JPG to PDF</h3>
-                <p className="text-sm text-gray-600 dark:text-slate-400">Convert images to PDF</p>
-              </div>
-            </Link>
-            
-            <Link
-              href="/pdf-to-jpg"
-              className="p-4 bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-md transition-shadow flex items-center gap-4 theme-transition"
-            >
-              <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📄</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">PDF to JPG</h3>
-                <p className="text-sm text-gray-600 dark:text-slate-400">Convert PDF pages to images</p>
-              </div>
-            </Link>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { href: '/jpg-to-pdf',    icon: '🖼️', bg: 'bg-orange-100 dark:bg-orange-900/30', label: 'JPG to PDF',     desc: 'Convert images to PDF' },
+              { href: '/pdf-to-jpg',    icon: '📄', bg: 'bg-pink-100 dark:bg-pink-900/30',   label: 'PDF to JPG',     desc: 'Convert pages to images' },
+              { href: '/rotate',        icon: '🔄', bg: 'bg-yellow-100 dark:bg-yellow-900/30', label: 'Rotate PDF',   desc: 'Rotate individual pages' },
+              { href: '/watermark',     icon: '💧', bg: 'bg-violet-100 dark:bg-violet-900/30', label: 'Add Watermark', desc: 'Stamp text on every page' },
+              { href: '/page-numbers',  icon: '🔢', bg: 'bg-indigo-100 dark:bg-indigo-900/30', label: 'Page Numbers',  desc: 'Number your pages' },
+              { href: '/protect',       icon: '🔐', bg: 'bg-red-100 dark:bg-red-900/30',      label: 'Protect PDF',   desc: 'Password protect your PDF' },
+              { href: '/unlock',        icon: '🔓', bg: 'bg-teal-100 dark:bg-teal-900/30',    label: 'Unlock PDF',    desc: 'Remove password protection' },
+            ].map(tool => (
+              <Link
+                key={tool.href}
+                href={tool.href}
+                className="p-4 bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-md transition-shadow flex items-center gap-4 theme-transition"
+              >
+                <div className={`w-12 h-12 ${tool.bg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                  <span className="text-2xl">{tool.icon}</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{tool.label}</h3>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">{tool.desc}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </main>
