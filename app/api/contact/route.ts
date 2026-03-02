@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { sendEmail, emailTemplates } from '@/lib/email';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
 import { z } from 'zod';
+
+const RATE_LIMIT = {
+  maxRequests: 3,
+  windowMs: 60 * 60 * 1000, // 1 hour
+};
 
 // Validation schema
 const contactSchema = z.object({
@@ -39,6 +45,24 @@ const getTemplate = (type: string, name?: string) => {
 };
 
 export async function POST(req: Request) {
+  // Rate limiting
+  const clientIp = getClientIp(req);
+  const rateLimitResult = rateLimit(`contact:${clientIp}`, RATE_LIMIT);
+
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': RATE_LIMIT.maxRequests.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+        },
+      }
+    );
+  }
+
   try {
     const body = await req.json();
 

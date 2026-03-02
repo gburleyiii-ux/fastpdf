@@ -4,7 +4,7 @@ import { useUser } from '@/hooks/useUser'
 import { useUsage } from '@/hooks/useUsage'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { FileText, Merge, Scissors, Minimize2, Zap, Crown } from 'lucide-react'
+import { FileText, Merge, Scissors, Minimize2, Zap } from 'lucide-react'
 import Link from 'next/link'
 import DarkModeToggle from '@/components/DarkModeToggle'
 
@@ -97,18 +97,18 @@ export default function Dashboard() {
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-600 dark:text-slate-400">PDF Operations</span>
+                    <span className="text-gray-600 dark:text-slate-400">Merge Operations</span>
                     <span className="font-semibold text-gray-900 dark:text-slate-200">{todayCount} / 2</span>
                   </div>
                   <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2">
                     <div
                       className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full"
-                      style={{ width: `${(todayCount / 2) * 100}%` }}
+                      style={{ width: `${Math.min((todayCount / 2) * 100, 100)}%` }}
                     />
                   </div>
                 </div>
                 <p className="text-xs text-gray-600 dark:text-slate-400">
-                  {remainingUses} {remainingUses === 1 ? 'operation' : 'operations'} remaining today
+                  {remainingUses} merge {remainingUses === 1 ? 'operation' : 'operations'} remaining today · 2 free uses per tool per day
                 </p>
               </div>
             )}
@@ -159,72 +159,34 @@ export default function Dashboard() {
               <p className="text-sm text-gray-600 dark:text-slate-400">Combine multiple PDF files into one</p>
             </button>
             
-            {/* Split PDF - Upgrade for Free Users */}
+            {/* Split PDF */}
             <button
-              onClick={() => isPro ? router.push('/split') : router.push('/pricing')}
-              className={`p-6 rounded-lg shadow hover:shadow-md transition-shadow text-left group theme-transition ${
-                isPro 
-                  ? 'bg-white dark:bg-slate-800' 
-                  : 'bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-2 border-purple-200 dark:border-purple-700'
-              }`}
+              onClick={() => router.push('/split')}
+              className="p-6 bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-md transition-shadow text-left group theme-transition"
             >
               <div className="flex items-start justify-between mb-2">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  isPro 
-                    ? 'bg-purple-100 dark:bg-purple-900/30' 
-                    : 'bg-purple-200 dark:bg-purple-800/30'
-                }`}>
+                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                   <Scissors className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 </div>
-                {!isPro && (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-purple-700 dark:text-purple-300 bg-purple-200 dark:bg-purple-800/50 px-2 py-1 rounded-full">
-                    <Crown className="w-3 h-3" /> Pro
-                  </span>
-                )}
+                <Zap className="w-4 h-4 text-gray-400" />
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Split PDF</h3>
-              <p className="text-sm text-gray-600 dark:text-slate-400">
-                {isPro ? 'Extract pages from your PDFs' : 'Upgrade to access this feature'}
-              </p>
-              {!isPro && (
-                <span className="inline-block mt-3 text-sm font-bold text-purple-700 dark:text-purple-300">
-                  Upgrade →
-                </span>
-              )}
+              <p className="text-sm text-gray-600 dark:text-slate-400">Extract pages from your PDFs</p>
             </button>
-            
-            {/* Compress PDF - Upgrade for Free Users */}
+
+            {/* Compress PDF */}
             <button
-              onClick={() => isPro ? router.push('/compress') : router.push('/pricing')}
-              className={`p-6 rounded-lg shadow hover:shadow-md transition-shadow text-left group theme-transition ${
-                isPro 
-                  ? 'bg-white dark:bg-slate-800' 
-                  : 'bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-2 border-green-200 dark:border-green-700'
-              }`}
+              onClick={() => router.push('/compress')}
+              className="p-6 bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-md transition-shadow text-left group theme-transition"
             >
               <div className="flex items-start justify-between mb-2">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  isPro 
-                    ? 'bg-green-100 dark:bg-green-900/30' 
-                    : 'bg-green-200 dark:bg-green-800/30'
-                }`}>
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
                   <Minimize2 className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
-                {!isPro && (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700 dark:text-green-300 bg-green-200 dark:bg-green-800/50 px-2 py-1 rounded-full">
-                    <Crown className="w-3 h-3" /> Pro
-                  </span>
-                )}
+                <Zap className="w-4 h-4 text-gray-400" />
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Compress PDF</h3>
-              <p className="text-sm text-gray-600 dark:text-slate-400">
-                {isPro ? 'Reduce your PDF file size' : 'Upgrade to access this feature'}
-              </p>
-              {!isPro && (
-                <span className="inline-block mt-3 text-sm font-bold text-green-700 dark:text-green-300">
-                  Upgrade →
-                </span>
-              )}
+              <p className="text-sm text-gray-600 dark:text-slate-400">Reduce your PDF file size</p>
             </button>
           </div>
         </div>

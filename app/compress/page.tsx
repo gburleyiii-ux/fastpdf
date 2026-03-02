@@ -106,7 +106,6 @@ export default function CompressPage() {
   const downloadCompressed = () => {
     if (!compressedPdf) return;
     
-    // @ts-ignore - Uint8Array is compatible with BlobPart
     const blob = new Blob([compressedPdf], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -279,27 +278,27 @@ export default function CompressPage() {
           </>
         ) : (
           /* Success State */
-          <div className="bg-white border rounded-2xl p-12 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+          <div className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-2xl p-12 text-center theme-transition">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-3xl font-black text-gray-900 mb-4">PDF Compressed Successfully!</h2>
-            
+            <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4">PDF Compressed Successfully!</h2>
+
             {/* Size Comparison */}
-            <div className="bg-green-50 rounded-xl p-6 mb-8">
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-6 mb-8">
               <div className="flex items-center justify-center gap-4 mb-4">
                 <div className="text-center">
-                  <div className="text-sm text-gray-600 mb-1">Original</div>
-                  <div className="text-2xl font-bold text-gray-900">{formatFileSize(originalSize)}</div>
+                  <div className="text-sm text-gray-600 dark:text-slate-400 mb-1">Original</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{formatFileSize(originalSize)}</div>
                 </div>
-                <ArrowDown className="w-6 h-6 text-green-600" />
+                <ArrowDown className="w-6 h-6 text-green-600 dark:text-green-400" />
                 <div className="text-center">
-                  <div className="text-sm text-gray-600 mb-1">Compressed</div>
-                  <div className="text-2xl font-bold text-green-600">{formatFileSize(compressedSize)}</div>
+                  <div className="text-sm text-gray-600 dark:text-slate-400 mb-1">Compressed</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">{formatFileSize(compressedSize)}</div>
                 </div>
               </div>
               <div className="text-center">
-                <span className="inline-block bg-green-200 text-green-800 px-4 py-2 rounded-full font-bold">
+                <span className="inline-block bg-green-200 dark:bg-green-800/50 text-green-800 dark:text-green-300 px-4 py-2 rounded-full font-bold">
                   Saved {savings.amount} ({savings.percent}%)
                 </span>
               </div>
@@ -308,14 +307,14 @@ export default function CompressPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={downloadCompressed}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform flex items-center justify-center gap-2"
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform flex items-center justify-center gap-2 shadow-lg shadow-green-200 dark:shadow-green-900/30"
               >
                 <Download className="w-5 h-5" />
                 Download Compressed PDF
               </button>
               <button
                 onClick={reset}
-                className="bg-gray-100 text-gray-900 px-8 py-4 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+                className="bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white px-8 py-4 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
               >
                 Compress Another
               </button>
@@ -324,11 +323,13 @@ export default function CompressPage() {
         )}
 
         {/* Privacy Notice */}
-        <div className="mt-12 bg-gray-50 border border-gray-200 rounded-xl p-6 flex items-start gap-4">
-          <Lock className="w-6 h-6 text-gray-600 flex-shrink-0 mt-1" />
+        <div className="mt-12 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-6 flex items-start gap-4 theme-transition">
+          <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <Lock className="w-6 h-6 text-green-600 dark:text-green-400" />
+          </div>
           <div>
-            <h4 className="font-bold text-gray-900 mb-2">Your files are 100% private</h4>
-            <p className="text-sm text-gray-600">
+            <h4 className="font-bold text-gray-900 dark:text-white mb-2">Your files are 100% private</h4>
+            <p className="text-sm text-gray-600 dark:text-slate-400">
               All processing happens in your browser. Your files never leave your device and are never uploaded to any server. We have zero access to your documents.
             </p>
           </div>

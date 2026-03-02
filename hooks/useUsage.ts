@@ -60,8 +60,11 @@ export function useUsage(action: string) {
 
       if (error) throw error
 
-      setTodayCount((prev) => prev + 1)
-      setCanUse(todayCount + 1 < FREE_DAILY_LIMIT)
+      setTodayCount((prev) => {
+        const newCount = prev + 1
+        setCanUse(newCount < FREE_DAILY_LIMIT)
+        return newCount
+      })
       
       return true
     } catch (error) {

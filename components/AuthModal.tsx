@@ -39,8 +39,7 @@ export default function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClos
         setMessage('Signed in successfully!')
         setTimeout(() => {
           onClose()
-          window.location.reload()
-        }, 1000)
+        }, 800)
       }
     } catch (error: any) {
       setMessage(error.message)

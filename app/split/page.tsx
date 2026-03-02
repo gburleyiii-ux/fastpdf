@@ -80,7 +80,6 @@ export default function SplitPage() {
 
   const downloadAll = () => {
     splitPdfs.forEach(pdf => {
-      // @ts-ignore
       const blob = new Blob([pdf.data], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -112,11 +111,19 @@ export default function SplitPage() {
             {user ? (
               <>
                 <Link href="/dashboard" className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white font-medium">Dashboard</Link>
+                {!isPro && (
+                  <Link
+                    href="/pricing"
+                    className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:scale-105 transition-transform"
+                  >
+                    Upgrade to Pro
+                  </Link>
+                )}
                 <button onClick={signOut} className="text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white text-sm">Sign Out</button>
               </>
             ) : (
               <button onClick={() => setShowAuthModal(true)} className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:scale-105 transition-transform">
-                Sign In
+                Sign In / Sign Up
               </button>
             )}
           </div>
@@ -151,6 +158,23 @@ export default function SplitPage() {
               <Zap className="w-6 h-6" />
               <span className="font-bold">Pro Plan • Unlimited Splits</span>
             </div>
+          </div>
+        )}
+
+        {!user && (
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-8 flex items-center justify-between theme-transition">
+            <div className="flex items-center gap-3">
+              <Lock className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              <span className="font-bold text-gray-900 dark:text-white">
+                Sign in to start splitting PDFs
+              </span>
+            </div>
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="text-purple-600 dark:text-purple-400 font-bold hover:underline text-sm"
+            >
+              Sign In →
+            </button>
           </div>
         )}
 

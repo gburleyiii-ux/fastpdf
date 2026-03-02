@@ -67,7 +67,6 @@ export default function JpgToPdfPage() {
 
   const download = () => {
     if (!convertedPdf) return;
-    // @ts-ignore
     const blob = new Blob([convertedPdf], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
